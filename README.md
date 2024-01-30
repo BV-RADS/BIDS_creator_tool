@@ -31,14 +31,6 @@ python dicom_sorter.py --dicomin /path/to/unsorted/dicom/files --dicomout /path/
 - `--dicomin`: Path to the directory containing unsorted DICOM files.
 - `--dicomout`: Path to the directory where the sorted DICOM files will be stored based on their metadata.
 
-## License
-
-This project is open-sourced under the MIT License. See the LICENSE file for more details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a pull request.
-
 ## Disclaimer
 
 This script is provided "as is", without warranty of any kind. Use at your own risk.
