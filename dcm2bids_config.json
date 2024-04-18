@@ -1,0 +1,171 @@
+{
+  "dcm2niixOptions": "-b y -i y -ba y -z y -f '%3s_%f_%p_%t'",
+  "descriptions": [
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "criteria": {
+      	"SeriesDescription": "*T1W_SE_sag"
+      }
+    },
+        {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "criteria": {
+	"SeriesDescription": "*T1W_SE"
+      }
+    },
+    
+    
+    
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "custom_entities": "acq-3D",
+      "criteria": {
+        "SeriesDescription": {"any" : ["*neuronav*", "*TFE*"]},
+        "SliceThickness": {"le": "2.5"},
+        "SpacingBetweenSlices": {"le": "1.5"},
+        "SeriesNumber": {
+              "lt": "500"
+          }
+      }
+    },
+ 
+
+    
+    {
+      "datatype": "anat",
+      "suffix": "FLAIR",
+      "criteria": {
+	"SeriesDescription": "*FLAIR*"
+      }
+    },    
+    {
+      "datatype": "dwi",
+      "suffix": "dwi",
+      "criteria": {
+        "SeriesDescription": "*DWI*"
+      }
+    },    
+  
+    {
+      "datatype": "dwi",
+      "suffix": "adc",
+      "criteria": {
+        "SeriesDescription": "*ADC*"
+      }
+    },    
+  
+    
+    {
+      "datatype": "perf",
+      "suffix": "dsc",
+      "criteria": {
+        "SeriesDescription": {"any" : ["*PERF*", "*PWI*","*pwi*", "*DSC*", "*dsc*", "*perf*", "*erf*"]}
+      }
+    },
+
+    {
+      "datatype": "anat",
+      "suffix": "T2w",
+      "criteria": {
+		"SeriesDescription":  {"any" : ["*T2_3D*",  "*T2W_TSE*"]}
+      }
+    },    
+
+    {
+      "datatype": "anat",
+      "suffix": "T2starw",
+      "criteria": {
+	"SeriesDescription": "*T2W_FFE*"
+      }
+    },    
+
+
+    
+    
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "custom_entities": "ce-GD",
+      "criteria": {
+        "SeriesDescription": {"any" : ["T1W_GD", "*SE_GAD*", "*SE/GAD*", "*SE_GD*"]},
+        "SeriesNumber": {
+              "ge": "500"
+	}
+      }
+    },
+          
+
+
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "custom_entities": "acq-3D_ce-GD",
+      "criteria": {
+        "SeriesDescription": {"any" : ["*euronav*", "*TFE*"]},
+        "SliceThickness": {"le": "2.5"},	
+        "SpacingBetweenSlices": {"le": "1.5"},
+        "SeriesNumber": {
+              "ge": "500"
+          }
+      }
+    },
+ 
+
+    
+    {
+    
+      "datatype": "dwi",
+      "suffix": "dwi",
+      "custom_entities": "acq-DTI",
+      "criteria": {
+      	"ProtocolName": "*DTI*"      
+      	},
+      "sidecar_changes": {
+        "TotalReadoutTime": 0.03167,
+        "PhaseEncodingDirection": "j"
+      }
+    },
+	
+	    
+    {    
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities":  "task-NomsVisual",
+      "criteria": {      	
+		"SeriesDescription":  {"any" : [ "NOMS_VISUAL",  "NOMS VISUAL"]}
+      	}
+    },	
+	
+	
+    {    
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities":  "task-NomsAuditiu",
+      "criteria": {      	
+		"SeriesDescription":  {"any" : [ "NOMS_AUDITIU",  "NOMS AUDITIU"]}
+      	}
+    },	
+	
+    {    
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities":  "task-VerbsVisual",
+      "criteria": {      	
+		"SeriesDescription":  {"any" : [ "VERBS_VISUAL",  "VERBS VISUAL"]}
+      	}
+    },	
+	
+    {    
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities":  "task-VerbsAuditiu",
+      "criteria": {      	
+		"SeriesDescription":  {"any" : [ "VERBS_AUDITIU",  "VERBS AUDITIU"]}
+      	}
+    }
+	
+]
+}
