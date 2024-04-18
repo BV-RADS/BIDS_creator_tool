@@ -20,9 +20,8 @@ def read_id_correlation(file_path):
     if file_path:
         with open(file_path, 'r') as file:
             for line in file:
-                # Use regular expression to split by comma, space, or tab
                 parts = re.split(r',|\s|\t', line.strip())
-                if len(parts) >= 2:  # Ensure there are at least two parts
+                if len(parts) >= 2:
                     old_id, new_id = parts[0], parts[1]
                     id_map[old_id] = new_id
                 else:
@@ -41,6 +40,16 @@ def anonymize_dicom_tags(dataset, id_map=None):
         else:
             missing_ids.add(old_id)
     return dataset
+
+def generate_unique_filename(directory, filename):
+    """Generates a unique filename to avoid overwriting in the specified directory."""
+    base_name, extension = os.path.splitext(filename)
+    counter = 1
+    new_filename = filename
+    while os.path.exists(os.path.join(directory, new_filename)):
+        new_filename = f"{base_name}_{counter}{extension}"
+        counter += 1
+    return new_filename
 
 def copy_dicom_image(src_file, dest_base_dir, pattern, anonymize=False, id_map=None):
     non_dicom_extensions = ['.png', '.jpeg', '.jpg', '.gif', '.bmp']
@@ -62,7 +71,9 @@ def copy_dicom_image(src_file, dest_base_dir, pattern, anonymize=False, id_map=N
 
     dest_directory = sanitize_filepath(os.path.join(dest_base_dir, pattern), platform='auto')
     os.makedirs(dest_directory, exist_ok=True)
-    dataset.save_as(os.path.join(dest_directory, os.path.basename(src_file)))
+    
+    unique_filename = generate_unique_filename(dest_directory, os.path.basename(src_file))
+    dataset.save_as(os.path.join(dest_directory, unique_filename))
 
 def copy_directory(src_dir, dest_dir, pattern, anonymize, id_map):
     all_files = [os.path.join(root, file) for root, _, files in os.walk(src_dir) for file in files]
@@ -70,7 +81,7 @@ def copy_directory(src_dir, dest_dir, pattern, anonymize, id_map):
         copy_dicom_image(file, dest_dir, pattern, anonymize, id_map)
 
 def sort_dicom(input_dir, output_dir, anonymize, id_map):
-    pattern = '%PatientID%/%StudyDate%/%SeriesNumber%_%SeriesDescription%'
+    pattern = '%PatientID%/%StudyDate%/%SeriesDescription%'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     copy_directory(input_dir, output_dir, pattern, anonymize, id_map)
