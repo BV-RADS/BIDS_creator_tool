@@ -46,7 +46,7 @@ def should_process_series(series_desc, series_num):
     print(f"Checking Series: Description='{series_desc}', Number='{series_num}'")
     
     # Case-insensitive search for "T1", "T2", or "FLAIR"
-    if series_num.endswith('1') and any(sub in series_desc.upper() for sub in ['T1', 'T2', 'FLAIR']):
+    if series_num.endswith('1') and any(sub in series_desc.upper() for sub in ['TFE', 'BrainView', 'TRA_T2_TSE', 'T2W_TSE_TRA', 'FLAIR']):
         return True
     return False
 
