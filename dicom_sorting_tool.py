@@ -54,7 +54,7 @@ def generate_unique_filename(directory, filename):
 
 def sanitize_series_description(description):
     """Sanitizes the series description by replacing spaces with underscores and removing invalid characters."""
-    description = description.replace(' ', '_').replace('*', '')
+    description = description.replace(' ', '_').replace('*', '').replace('.', '_')
     # Remove or replace other invalid characters
     invalid_chars = r'<>:"/\|?*'
     description = re.sub(f'[{re.escape(invalid_chars)}]', '', description)
@@ -92,7 +92,7 @@ def process_file(file, dest_dir, pattern, anonymize, id_map):
 def copy_directory(src_dir, dest_dir, pattern, anonymize, id_map):
     all_files = [os.path.join(root, file) for root, _, files in os.walk(src_dir) for file in files]
     
-    num_cores = max(2, multiprocessing.cpu_count() - 4)
+    num_cores = max(2, multiprocessing.cpu_count() // 2)
     with ProcessPoolExecutor(max_workers=num_cores) as executor:
         futures = [executor.submit(process_file, file, dest_dir, pattern, anonymize, id_map) for file in all_files]
         for future in tqdm(as_completed(futures), total=len(futures), desc="Processing", unit="file"):
