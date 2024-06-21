@@ -4,10 +4,11 @@
 import os
 import argparse
 import pydicom
-import shutil
 from pathvalidate import sanitize_filepath
 from tqdm import tqdm
 import re
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import multiprocessing
 
 def get_dicom_attribute(dataset, attribute):
     try:
@@ -51,6 +52,14 @@ def generate_unique_filename(directory, filename):
         counter += 1
     return new_filename
 
+def sanitize_series_description(description):
+    """Sanitizes the series description by replacing spaces with underscores and removing invalid characters."""
+    description = description.replace(' ', '_').replace('*', '')
+    # Remove or replace other invalid characters
+    invalid_chars = r'<>:"/\|?*'
+    description = re.sub(f'[{re.escape(invalid_chars)}]', '', description)
+    return sanitize_filepath(description, platform='auto')
+
 def copy_dicom_image(src_file, dest_base_dir, pattern, anonymize=False, id_map=None):
     non_dicom_extensions = ['.png', '.jpeg', '.jpg', '.gif', '.bmp']
     if any(src_file.lower().endswith(ext) for ext in non_dicom_extensions):
@@ -67,6 +76,8 @@ def copy_dicom_image(src_file, dest_base_dir, pattern, anonymize=False, id_map=N
 
     for attribute in ['PatientID', 'StudyDate', 'SeriesNumber', 'SeriesDescription']:
         value = get_dicom_attribute(dataset, attribute)
+        if attribute == 'SeriesDescription':
+            value = sanitize_series_description(value)
         pattern = pattern.replace(f'%{attribute}%', value)
 
     dest_directory = sanitize_filepath(os.path.join(dest_base_dir, pattern), platform='auto')
@@ -75,10 +86,17 @@ def copy_dicom_image(src_file, dest_base_dir, pattern, anonymize=False, id_map=N
     unique_filename = generate_unique_filename(dest_directory, os.path.basename(src_file))
     dataset.save_as(os.path.join(dest_directory, unique_filename))
 
+def process_file(file, dest_dir, pattern, anonymize, id_map):
+    copy_dicom_image(file, dest_dir, pattern, anonymize, id_map)
+
 def copy_directory(src_dir, dest_dir, pattern, anonymize, id_map):
     all_files = [os.path.join(root, file) for root, _, files in os.walk(src_dir) for file in files]
-    for file in tqdm(all_files, desc="Processing", unit="file"):
-        copy_dicom_image(file, dest_dir, pattern, anonymize, id_map)
+    
+    num_cores = max(2, multiprocessing.cpu_count() - 4)
+    with ProcessPoolExecutor(max_workers=num_cores) as executor:
+        futures = [executor.submit(process_file, file, dest_dir, pattern, anonymize, id_map) for file in all_files]
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Processing", unit="file"):
+            future.result()  # To raise exceptions if any
 
 def sort_dicom(input_dir, output_dir, anonymize, id_map):
     pattern = '%PatientID%/%StudyDate%/%SeriesDescription%'
