@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import os
 import subprocess
 import sys
@@ -9,7 +10,6 @@ import glob
 
 """
 Simplified DICOM Processing Script
-
 This script is designed to process DICOM files, executing dcm2bids for each subject and session,
 and maintaining a record of study dates.
 
@@ -17,8 +17,10 @@ Usage:
     python script_name.py [options]
 
 Options:
-    --dicomin         Specify the path to the DICOM input directory.
+    --dicomin         Specify the path to the DICOM input directory. Default is "sourcedata".
     --nobids          Skip the conversion to BIDS format.
+    --config          Specify the path to the dcm2bids configuration JSON file. Default is "dcm2bids_config.json".
+    --bidsdir         Specify the path for the BIDS output directory. Default is "BIDSDIR" in the script's directory.
 """
 
 def parse_arguments():
@@ -34,6 +36,16 @@ def parse_arguments():
         '--nobids',
         action='store_true',
         help='Skip the conversion to BIDS format.'
+    )
+    parser.add_argument(
+        '--config',
+        default="dcm2bids_config.json",
+        help='Path to the dcm2bids configuration JSON file. Default is "dcm2bids_config.json".'
+    )
+    parser.add_argument(
+        '--bidsdir',
+        default=None,
+        help='Path for the BIDS output directory. Default is "BIDSDIR" in the script\'s directory.'
     )
     return parser.parse_args()
 
@@ -73,13 +85,13 @@ def process_sessions(sourcedata_dir, bidsdir_folder, dcm2bids_config):
 
 def main():
     args = parse_arguments()
-    bidsfolder = os.path.dirname(os.path.realpath(__file__))
-    os.chdir(bidsfolder)
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(script_dir)
 
     # Directory setup
     sourcedata_dir = os.path.abspath(args.dicomin)
-    bidsdir_folder = os.path.join(bidsfolder, "BIDSDIR")
-    dcm2bids_config = "dcm2bids_config.json"
+    bidsdir_folder = args.bidsdir if args.bidsdir else os.path.join(script_dir, "BIDSDIR")
+    dcm2bids_config = args.config
 
     # BIDS directory setup
     if not os.path.exists(bidsdir_folder):
