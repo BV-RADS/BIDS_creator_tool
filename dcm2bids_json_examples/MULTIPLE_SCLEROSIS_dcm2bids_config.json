@@ -1,0 +1,73 @@
+{
+  "dcm2niixOptions": "-b y -i y -ba y -z y -f '%3s_%f_%p_%t'",
+  "descriptions": [
+       
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "criteria": {
+        "SeriesDescription": {"any" : ["*neuronav*", "*TFE*", "*T1_FFE*"]},
+        "SliceThickness": {"le": "2.5"},
+        "SpacingBetweenSlices": {"le": "1.5"},
+        "SeriesNumber": {
+              "lt": "500"
+          }
+      }
+    },
+ 
+
+    
+    {
+      "datatype": "anat",
+      "suffix": "FLAIR",
+      "criteria": {
+	"SeriesDescription": "*FLAIR*"
+      }
+    },
+
+    {
+      "datatype": "anat",
+      "suffix": "T2w",
+      "criteria": {
+		"SeriesDescription":  {"any" : ["*T2_3D*",  "*T2W_TSE*","*X_T2*"]}
+      }
+    }, 
+
+    {
+      "datatype": "anat",
+      "suffix": "swi",
+      "custom_entities": "part-phase",
+      "criteria": {
+        "SeriesDescription": "*SWI*",
+			"ImageType": {"any" : [["ORIGINAL", "PRIMARY", "SW", "P", "SW", "P", "FFE", "PHASE"], ["ORIGINAL", "PRIMARY", "SW", "P", "FFE", "SW", "P", "FFE", "PHASE"]]}
+      }
+    },
+    {
+      "datatype": "anat",
+      "suffix": "swi",
+      "custom_entities": "part-mag",
+      "criteria": {
+        "SeriesDescription": "*SWI*",
+			"ImageType": {"any" : [["ORIGINAL", "PRIMARY", "SW", "M", "SW", "M", "FFE"],["ORIGINAL", "PRIMARY", "SW", "M", "FFE", "SW", "M", "FFE"]]}
+						
+      }
+    },    
+
+
+    
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "custom_entities": "ce-GD",
+      "criteria": {
+        "SeriesDescription": {"any" : ["*euronav*", "*TFE*", "FFE"]},
+        "SliceThickness": {"le": "2.5"},	
+        "SpacingBetweenSlices": {"le": "1.5"},
+        "SeriesNumber": {
+              "ge": "500"
+          }
+      }
+    }    
+	
+]
+}
